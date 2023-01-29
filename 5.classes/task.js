@@ -99,3 +99,43 @@ issuedBook.fix();
 
 library.addBook(issuedBook);
 console.log(library.books.length);
+
+class Student {
+  constructor(name) {
+    this.name = name;
+    this.marks = {};
+  }
+
+  addMark(mark, subject) {
+    if (mark < 2 || mark > 5) {
+      return;
+    }
+
+    if (!(subject in this.marks)) {
+      this.marks[subject] = [mark];
+    } else {
+      this.marks[subject] = [...this.marks[subject], mark];
+    }
+  }
+
+  getAverageBySubject(subject) {
+    if (!(subject in this.marks)) {
+      return 0;
+    }
+
+    return this.marks[subject].reduce((acc, value, index, arr) => {
+      return acc + value / arr.length;
+    }
+    , 0)
+  }
+
+  getAverage() {
+    let averageSum = 0;
+    const subjects = Object.keys(this.marks);
+    for (let subject of subjects) {
+      averageSum += this.getAverageBySubject(subject);
+    }
+
+    return averageSum / subjects.length;
+  }
+}
