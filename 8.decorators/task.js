@@ -5,10 +5,10 @@ function cachingDecoratorNew(func) {
   const memoizedFunc = (...args) => {
     const hash = md5(args.join(''));
 
-    for (let record of cache) {
-      if (record.hash === hash) {
-        return `Из кэша: ${record.value}`
-      }
+    const foundCash = cache.find(cacheItem => cacheItem.hash === hash);
+
+    if (foundCash) {
+      return `Из кэша: ${foundCash.value}`
     }
 
     const result = func(...args);
@@ -26,28 +26,24 @@ function cachingDecoratorNew(func) {
 
 //Задача № 2
 function debounceDecoratorNew(func, delay) {
-  let isThrottled = false;
+  let timeoutId = null;
 
   const decoratedFunction = (...args) => {
     decoratedFunction.allCount++;
-    if (isThrottled) {
-      setTimeout(() => func(...args), delay);
-      return;
+    if (!timeoutId) {
+      func(...args);
+      decoratedFunction.count++;
     }
+    clearTimeout(timeoutId);
 
-    func(...args);
-    decoratedFunction.count++;
-
-    isThrottled = true;
-    setTimeout(() => {
-      isThrottled = false;
-      
+    timeoutId = setTimeout(() => {
+      func(...args);
+      decoratedFunction.count++;
     }, delay);
   }
 
-  decoratedFunction.allCount = 0;
   decoratedFunction.count = 0;
-
+  decoratedFunction.allCount = 0;
 
   return decoratedFunction
 }
